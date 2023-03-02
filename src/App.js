@@ -1,42 +1,39 @@
-import ListText from './components/ListText';
-import Title from './components/Title';
 
-import './App.css';
 import { useState } from 'react';
-
-/**
- * То во что компилируется наш jsx
- * React.createElement('div', { className: App }, 'Hello World!, {
- *  React.createElement('div')
- * })
- */
-
+import './App.css';
+import Input from './components/Input';
+import TodoList from './components/TodoList';
 
 
 function App() {
-  
-  const [ state, setState ] = useState(0)
 
-  const isShow = true
-  const arr = [ { name: 'John' }, { name: 'Smith' }, { name: 'Varlam' } ]
-  
-  if (!isShow) {
-    return <></>
+  const [ list, setList ] = useState([])
+
+  const addTodo = (todo) => {
+    const newList = [ ...list, { ...todo, id: Date.now()} ]
+    setList(newList)
   }
 
-
-  const title = 'Hello World!'
+  const deleteTodo = (id) => {
+    const newList = list.filter((item) => item.id !== id)
+    setList(newList)
+  }
+  
+  const editTodo = (todo) => {
+    const newList = list.map((item) => {
+      if (item.id === todo.id) {
+        return todo
+      } else {
+        return item
+      }
+    })
+    setList(newList)
+  } 
 
   return (
     <div className="App">
-      {isShow && (
-        <Title title={title} arr={arr}>
-          Hello World!
-        </Title>
-      )}
-      <ListText arr={arr}/>
-      <h1>{state}</h1>
-      <button onClick={() => setState(state + 1)}>PLUS</button>
+      <Input addTodo={addTodo}/>
+      <TodoList list={list} deleteTodo={deleteTodo} editTodo={editTodo}/>
     </div>
   );
 }
