@@ -1,6 +1,7 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Counter from './components/Counter';
 import Input from './components/Input';
 import TodoList from './components/TodoList';
 
@@ -28,10 +29,20 @@ function App() {
       }
     })
     setList(newList)
-  } 
+  }
 
+  const [ isShow, setIsShow ] = useState(false)
+
+  const titleButton = isShow ? 'HIDE' : 'SHOW'
+  
   return (
     <div className="App">
+      <button onClick={() => setIsShow(!isShow)}>{titleButton}</button>
+      {
+        isShow && (
+          <Counter/>
+        )
+      }
       <Input addTodo={addTodo}/>
       <TodoList list={list} deleteTodo={deleteTodo} editTodo={editTodo}/>
     </div>
