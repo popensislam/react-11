@@ -10,6 +10,10 @@ function App() {
 
   const [ list, setList ] = useState([])
 
+  const [ isShow, setIsShow ] = useState(false)
+
+  const titleButton = isShow ? 'HIDE' : 'SHOW'
+
   const addTodo = (todo) => {
     const newList = [ ...list, { ...todo, id: Date.now()} ]
     setList(newList)
@@ -17,6 +21,8 @@ function App() {
 
   const deleteTodo = (id) => {
     const newList = list.filter((item) => item.id !== id)
+
+    localStorage.setItem('list', JSON.stringify(newList))
     setList(newList)
   }
   
@@ -31,10 +37,16 @@ function App() {
     setList(newList)
   }
 
-  const [ isShow, setIsShow ] = useState(false)
-
-  const titleButton = isShow ? 'HIDE' : 'SHOW'
+  useEffect(() => {
+    const listLocal = JSON.parse(localStorage.getItem('list'))
+    setList(listLocal)
+  }, [])
   
+  useEffect(() => {
+    if (list.length === 0) return
+    localStorage.setItem('list', JSON.stringify(list))
+  }, [ list ])
+
   return (
     <div className="App">
       <button onClick={() => setIsShow(!isShow)}>{titleButton}</button>

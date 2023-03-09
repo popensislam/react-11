@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSort } from "../hooks/hooks";
 
 const IsEditTo = ({ name, isEdit, title, handleChange, newValue }) => { 
 
@@ -16,6 +17,17 @@ const TodoList = ({ list, deleteTodo, editTodo }) => {
         title: '',
         desc: ''
     })
+    const [ pagination, setPagination] = useState({
+        offset: 0,
+        limit: 2
+    })
+    const [ page, setPage ] = useState(1)
+
+    const [type, setType ] = useState('asc')
+
+    const [searchValue, setSearchValue] = useState('')
+
+    const arrSorted = useSort(type, list)
 
     const handleChange = (e) => {
         setNewValue({ ...newValue, [ e.target.name ]: e.target.value })
@@ -32,9 +44,27 @@ const TodoList = ({ list, deleteTodo, editTodo }) => {
         setIsEdit(false)
     }
 
+    const allPage = Math.ceil(list.length / pagination.limit)
+
+    const nextPage = () => {
+        if (page === allPage) return
+        setPagination({...pagination, offset: pagination.offset + pagination.limit})
+        setPage(page + 1)
+    }
+
+    const prevPage = () => {
+        if (page === 1) return
+        setPagination({...pagination, offset: pagination.offset - pagination.limit})
+        setPage(page - 1)
+    }
+
     return (
         <div className="listWrapper">
-            {list.map((todo) =>
+            <input value={searchValue} onChange={(e) => setSearchValue(e.target.value)}/>
+            <button onClick={() => setType('asc')}>Sort asc</button>
+            <button onClick={() => setType('desc')}>Sort desc</button>
+            <button onClick={() => setType('letter')}>Sort letter</button>
+            {arrSorted.slice(pagination.offset, pagination.offset + pagination.limit).map((todo) =>
                 <div className="todoCard" key={todo.id}>
                     <div className="todoCardTitleWrapper">
                         <IsEditTo
@@ -65,6 +95,9 @@ const TodoList = ({ list, deleteTodo, editTodo }) => {
                     </div>
                 </div>
             )}
+            <button onClick={prevPage}>prev page</button>
+            {page + '/' + allPage}
+            <button onClick={nextPage}>next page</button>
         </div>
     );
 }
